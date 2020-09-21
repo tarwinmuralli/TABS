@@ -17,10 +17,10 @@ update () {
 create_user () {
 	echo 'Creating User'
 	echo 'User name must be lower case and no space'
-	read -p 'Enter you user name: ' user_name
+	read -rp 'Enter you user name: ' user_name
 	user_name=$(echo "$user_name" | tr 'A-Z' 'a-z') # Changes user name to lowercase
 	useradd -mg wheel "$user_name"
-	read -p "Enter password for $user_name :" user_password
+	read -rp "Enter password for $user_name :" user_password
 	echo "$user_password" | passwd --stdin "$user_name"
 }
 
@@ -56,7 +56,7 @@ microcode_install () {
 }
 
 ssd_fstrim () {
-	read -p "Are you using SSD [Y/n]" check_ssd
+	read -rp "Are you using SSD [Y/n]" check_ssd
 	if [ "${check_ssd}" = "Y" ] || [ -z "${check_ssd}" ]; then
 		systemctl enable fstrim.timer
 	fi
@@ -90,5 +90,23 @@ END
 }
 
 gpu_driver () {
+	read -rp "What gpu are you using A-(AMD) B-(INTEL) C-(ATI) [A/B/C] : " gpu
+	if [ "$gpu" = "A" ]; then
+		pacman -S xf86-video-intel
+	elif [ "$gpu" = "B" ]; then
+		pacman -S xf86-video-amdgpu
+	elif [ "$gpu" = "C" ]; then
+		pacman -S xf86-video-ati
+	else
+		echo "Invalid Answer"
+		gpu_driver
+	fi
 
+}
+
+setup_dotfiles () {
+	su $user_name
+	git clone https://github.com/tarwin1/.files.git
+	cd '.files'
+	stow *
 }
