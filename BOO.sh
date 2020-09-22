@@ -50,7 +50,7 @@ install_packages () {
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
 		ttf-linux-libertine ttf-symbola uclutter wget xclip xorg-server \
 		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper \
-		youtube-dl zathura zathura-pdf-poppler pandoc -y
+		youtube-dl zathura zathura-pdf-poppler pandoc base-devel -y
 
 	yay -S networkmanager-iwd libxft-bgra polybar slock-gruvbox-lowcontrast \
 		st-luke-git
