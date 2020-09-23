@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo "WARNING: YOU ARE RUNNING TARWIN's {BOO}tstraping script Make sure you are running this as root"
-echo "For better performance install dash and setup it up"
+echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)"
+echo "Make sure you are running this as root"
 echo "Makes sure you have connected to internet"
 
 update () {
@@ -46,13 +46,14 @@ systemctl_enable () {
 microcode_install () {
 	echo "Installing microcode"
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
-	[ "$cpu_vendor" = "GenuineIntel" ] && pacman -S intel-ucode && grub-mkconfig -o /boot/grub/grub.cfg
+	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode && grub-mkconfig -o /boot/grub/grub.cfg
+	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode && grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 ssd_fstrim () {
 	read -rp "Are you using SSD [Y/n]" check_ssd
-	if [ "${check_ssd}" = "Y" ] || [ "${check_ssd}" = "y" ] || \
-		[ -z "${check_ssd}" ]; then
+	check_ssd=$( echo $check_ssd | tr A-Z a-z)
+	if [ "${check_ssd}" = "y" ] || [ -z "${check_ssd}" ]; then
 		systemctl enable fstrim.timer
 	fi
 }
@@ -66,11 +67,12 @@ arch_mirror () {
 
 gpu_driver () {
 	read -rp "What gpu are you using A-(AMD) B-(INTEL) C-(ATI) [A/B/C] : " gpu
-	if [ "$gpu" = "A" ]; then
+	gpu=$(echo $gpu | tr A-Z a-z)
+	if [ "$gpu" = "a" ]; then
 		pacman -S xf86-video-intel
-	elif [ "$gpu" = "B" ]; then
+	elif [ "$gpu" = "b" ]; then
 		pacman -S xf86-video-amdgpu
-	elif [ "$gpu" = "C" ]; then
+	elif [ "$gpu" = "c" ]; then
 		pacman -S xf86-video-ati
 	fi
 
@@ -94,17 +96,22 @@ user_setup () {
 	stow --adopt *'
 }
 
-
-# Call all function
-timedatectl set-ntp true # sets date and time correctly
-update # full upgrade
-arch_mirror # set mirror to the faster
-create_user
-create_passwd
-microcode_install
-ssd_fstrim
-gpu_driver
-pacman_install
-systemctl_enable
-sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf # Use all cores for compilation.
-user_setup
+main () {
+	read -rp "Proceed? [Y/n] " -n 1 continue
+	continue=$(echo "$continue" | tr A-Z a-z)
+	[ "$continue" = n ] && exit 0
+	# Call all function
+	timedatectl set-ntp true # sets date and time correctly
+	update # full upgrade
+	arch_mirror # set mirror to the faster
+	create_user
+	create_passwd
+	microcode_install
+	ssd_fstrim
+	gpu_driver
+	pacman_install
+	systemctl_enable
+	# Use all cores for compilation
+	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
+	user_setup
+}
