@@ -1,17 +1,20 @@
 #!/bin/sh
 
-echo "WARNING: YOU ARE RUNNING TARWIN's {BOO}tstraping script Make sure you are running this as root\nMakes sure you have connected to internet\nFor better performance install dash and setup it up"
+echo "WARNING: YOU ARE RUNNING TARWIN's {BOO}tstraping script Make sure you are running this as root"
+echo "For better performance install dash and setup it up"
+echo "Makes sure you have connected to internet"
 
 update () {
 	echo 'Updating...'
-	pacman -Syyuu -y
+	pacman -Syyuu
 	echo 'Cleaning cache'
-	pacman -Scc -y
+	pacman -Scc
 
 }
 
 create_user () {
-	echo "Creating User\nUser name must be lower case and no space"
+	echo "Creating User..."
+	echo "User name must be lower case and no space"
 	read -rp 'Enter you user name: ' user_name
 	user_name=$(echo "$user_name" | tr 'A-Z' 'a-z') # Changes user name to lowercase
 	useradd -mG wheel "$user_name"
@@ -19,7 +22,7 @@ create_user () {
 
 create_passwd () {
 	read -rp "Enter password for $user_name :" user_password
-	echo "$user_password" | passwd --stdin "$user_name"
+	echo "${user_name}:${user_password}" | chpasswd
 	sed -i 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
 
 }
@@ -32,7 +35,7 @@ install_packages () {
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
 		ttf-linux-libertine ttf-symbola uclutter wget xclip xorg-server \
 		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper \
-		youtube-dl zathura zathura-pdf-poppler pandoc base-devel -y
+		youtube-dl zathura zathura-pdf-poppler pandoc base-devel
 
 	yay -S networkmanager-iwd libxft-bgra polybar slock-gruvbox-lowcontrast \
 		st-luke-git
@@ -57,9 +60,9 @@ microcode_install () {
 	echo "Installing microcode"
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
 	if [ "$cpu_vendor" = "GenuineIntel" ]; then
-		pacman -S intel-ucode -y
+		pacman -S intel-ucode
 	else
-		pacman -S amd-ucode -y
+		pacman -S amd-ucode
 	fi
 # grub-mkconfig -o /boot/grub/grub.cfg
 }
@@ -74,7 +77,8 @@ ssd_fstrim () {
 
 arch_mirror () {
 	echo "Updating mirrors"
-	pacman -S reflector -y
+	mkdir /etc/pacman.d/hooks
+	pacman -S reflector
 	reflector --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 cat << END > /etc/pacman.d/hooks/mirrorupgrade.hook
 [Trigger]
@@ -104,14 +108,11 @@ END
 gpu_driver () {
 	read -rp "What gpu are you using A-(AMD) B-(INTEL) C-(ATI) [A/B/C] : " gpu
 	if [ "$gpu" = "A" ]; then
-		pacman -S xf86-video-intel -y
+		pacman -S xf86-video-intel
 	elif [ "$gpu" = "B" ]; then
-		pacman -S xf86-video-amdgpu -y
+		pacman -S xf86-video-amdgpu
 	elif [ "$gpu" = "C" ]; then
-		pacman -S xf86-video-ati -y
-	else
-		echo "Invalid Answer"
-		gpu_driver
+		pacman -S xf86-video-ati
 	fi
 
 }
