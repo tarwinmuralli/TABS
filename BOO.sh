@@ -27,28 +27,15 @@ create_passwd () {
 
 pacman_install () {
 	sudo pacman --needed --noconfirm -S \
-		alsa-utils bspwm dash stow dmenu dunst git htop lf \
+		alsa-utils bspwm dash stow dmenu dunst git htop \
 		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
 		neovim networkmanager newsboat noto-fonts noto-fonts-emoji picom \
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
-		ttf-linux-libertine ttf-symbola uclutter wget xclip xorg-server \
+		ttf-linux-libertine unclutter wget xclip xorg-server \
 		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper python-pip \
-		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg gnome-keyring
+		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg \
+		gnome-keyring firefox
 
-}
-
-aur_pkg_install () {
-	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git
-
-}
-
-install_yay () {
-	cd "$HOME"
-	git clone https://aur.archlinux.org/yay.git
-	cd yay
-	makepkg -si
-	cd "$HOME"
-	rm -rf yay
 }
 
 systemctl_enable () {
@@ -89,13 +76,6 @@ gpu_driver () {
 
 }
 
-setup_dotfiles () {
-	cd "$HOME"
-	git clone https://github.com/tarwin1/.files.git
-	cd .files
-	stow -adopt -- *glob*
-}
-
 user_setup () {
 	su - "$user_name" -c '
 	# Install Yay
@@ -111,7 +91,7 @@ user_setup () {
 	cd "$HOME"
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
-	stow -adopt -- *glob*'
+	stow --adopt *'
 }
 
 
@@ -126,11 +106,5 @@ ssd_fstrim
 gpu_driver
 pacman_install
 systemctl_enable
-# Use all cores for compilation.
-sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
-#
+sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf # Use all cores for compilation.
 user_setup
-# Non root commands
-# install_yay
-# aur_pkg_install
-# setup_dotfiles
