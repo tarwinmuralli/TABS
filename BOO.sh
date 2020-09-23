@@ -26,7 +26,7 @@ create_passwd () {
 }
 
 install_packages () {
-	sudo pacman ---needed --noconfirm -S \
+	sudo pacman --needed --noconfirm -S \
 		alsa-utils bspwm dash stow dmenu dunst git htop iwd lf \
 		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
 		neovim networkmanager newsboat noto-fonts noto-fonts-emoji picom \
@@ -71,7 +71,7 @@ ssd_fstrim () {
 arch_mirror () {
 	echo "Updating mirrors"
 	mkdir /etc/pacman.d/hooks
-	pacman ---noconfirm --needed -S  reflector
+	pacman --noconfirm --needed -S  reflector
 	reflector --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 }
 
