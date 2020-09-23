@@ -58,7 +58,6 @@ microcode_install () {
 	echo "Installing microcode"
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
 	[ "$cpu_vendor" = "GenuineIntel" ] && pacman -S intel-ucode
- grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 ssd_fstrim () {
@@ -72,31 +71,8 @@ ssd_fstrim () {
 arch_mirror () {
 	echo "Updating mirrors"
 	mkdir /etc/pacman.d/hooks
-	pacman -S --noconfirm --needed reflector
+	pacman ---noconfirm --needed -S  reflector
 	reflector --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
-cat << END > /etc/pacman.d/hooks/mirrorupgrade.hook
-[Trigger]
-Operation = Upgrade
-Type = Package
-Target = pacman-mirrorlist
-
-[Action]
-Description = Updating pacman-mirrorlist with reflector and removing pacnew...
-When = PostTransaction
-Depends = reflector
-Exec = /bin/sh -c 'systemctl start reflector.service; if [ -f /etc/pacman.d/mirrorlist.pacnew ]; then rm /etc/pacman.d/mirrorlist.pacnew; fi'
-EOF
-[Trigger]
-Operation = Upgrade
-Type = Package
-Target = pacman-mirrorlist
-
-[Action]
-Description = Updating pacman-mirrorlist with reflector and removing pacnew...
-When = PostTransaction
-Depends = reflector
-Exec = /bin/sh -c 'systemctl start reflector.service; if [ -f /etc/pacman.d/mirrorlist.pacnew ]; then rm /etc/pacman.d/mirrorlist.pacnew; fi'
-END
 }
 
 gpu_driver () {
