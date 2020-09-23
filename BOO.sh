@@ -72,7 +72,7 @@ ssd_fstrim () {
 arch_mirror () {
 	echo "Updating mirrors"
 	mkdir /etc/pacman.d/hooks
-	pacman -S reflector
+	pacman -S --noconfirm --needed reflector
 	reflector --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 cat << END > /etc/pacman.d/hooks/mirrorupgrade.hook
 [Trigger]
@@ -126,5 +126,5 @@ create_passwd
 microcode_install
 ssd_fstrim
 gpu_driver
-runuser -l $user_name -c install_yay install_packages setup_dotfiles systemctl_enable \
-	grub-mkconfig -o /boot/grub/grub.cfg
+runuser -l $user_name -c 'install_yay install_packages setup_dotfiles systemctl_enable \
+	grub-mkconfig -o /boot/grub/grub.cfg'
