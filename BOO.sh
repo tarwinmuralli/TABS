@@ -15,7 +15,7 @@ create_user () {
 	echo "User name must be lower case and no space"
 	read -rp 'Enter you user name: ' user_name
 	user_name=$(echo "$user_name" | tr 'A-Z' 'a-z') # Changes user name to lowercase
-	useradd -mG wheel "$user_name"
+	useradd -mG wheel "$user_name" -s /bin/bash
 	}
 
 create_passwd () {
@@ -25,18 +25,21 @@ create_passwd () {
 
 }
 
-install_packages () {
+pacman_install () {
 	sudo pacman --needed --noconfirm -S \
-		alsa-utils bspwm dash stow dmenu dunst git htop iwd lf \
+		alsa-utils bspwm dash stow dmenu dunst git htop lf \
 		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
 		neovim networkmanager newsboat noto-fonts noto-fonts-emoji picom \
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
 		ttf-linux-libertine ttf-symbola uclutter wget xclip xorg-server \
-		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper \
-		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg
+		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper python-pip \
+		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg gnome-keyring
 
-	yay  --noconfirm -S networkmanager-iwd libxft-bgra polybar \
-		slock-gruvbox-lowcontrast st-luke-git
+}
+
+aur_pkg_install () {
+	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git
+
 }
 
 install_yay () {
@@ -51,13 +54,12 @@ install_yay () {
 systemctl_enable () {
 	sudo systemctl enable fstrim.timer
 	sudo systemctl enable NetworkManager
-	sudo systemctl enable iwd
 }
 
 microcode_install () {
 	echo "Installing microcode"
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
-	[ "$cpu_vendor" = "GenuineIntel" ] && pacman -S intel-ucode
+	[ "$cpu_vendor" = "GenuineIntel" ] && pacman -S intel-ucode && grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 ssd_fstrim () {
@@ -71,7 +73,7 @@ ssd_fstrim () {
 arch_mirror () {
 	echo "Updating mirrors"
 	mkdir /etc/pacman.d/hooks
-	pacman --noconfirm --needed -S  reflector
+	pacman --needed -S --noconfirm  reflector
 	reflector --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
 }
 
@@ -88,19 +90,47 @@ gpu_driver () {
 }
 
 setup_dotfiles () {
+	cd "$HOME"
 	git clone https://github.com/tarwin1/.files.git
-	cd '.files'
-	stow -adopt *
+	cd .files
+	stow -adopt -- *glob*
 }
+
+user_setup () {
+	su - "$user_name" -c '
+	# Install Yay
+	cd "$HOME"
+	git clone https://aur.archlinux.org/yay.git
+	cd yay
+	makepkg -si
+	cd "$HOME"
+	rm -rf yay
+	# install aur pkg
+	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git
+	# setup dot files
+	cd "$HOME"
+	git clone https://github.com/tarwin1/.files.git
+	cd .files
+	stow -adopt -- *glob*'
+}
+
 
 # Call all function
 timedatectl set-ntp true # sets date and time correctly
-update
-arch_mirror
+update # full upgrade
+arch_mirror # set mirror to the faster
 create_user
 create_passwd
 microcode_install
 ssd_fstrim
 gpu_driver
-runuser -l $user_name -c 'install_yay install_packages setup_dotfiles systemctl_enable \
-	grub-mkconfig -o /boot/grub/grub.cfg'
+pacman_install
+systemctl_enable
+# Use all cores for compilation.
+sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
+#
+user_setup
+# Non root commands
+# install_yay
+# aur_pkg_install
+# setup_dotfiles
