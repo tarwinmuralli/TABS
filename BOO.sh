@@ -6,9 +6,7 @@ echo "Makes sure you have connected to internet"
 
 update () {
 	echo 'Updating...'
-	pacman -Syyuu
-	echo 'Cleaning cache'
-	pacman -Scc
+	pacman --noconfirm --needed -Syyuu
 
 }
 
@@ -28,17 +26,17 @@ create_passwd () {
 }
 
 install_packages () {
-	sudo pacman ---needed -S \
+	sudo pacman ---needed --noconfirm -S \
 		alsa-utils bspwm dash stow dmenu dunst git htop iwd lf \
 		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
 		neovim networkmanager newsboat noto-fonts noto-fonts-emoji picom \
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
 		ttf-linux-libertine ttf-symbola uclutter wget xclip xorg-server \
 		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper \
-		youtube-dl zathura zathura-pdf-poppler pandoc base-devel
+		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg
 
-	yay -S networkmanager-iwd libxft-bgra polybar slock-gruvbox-lowcontrast \
-		st-luke-git
+	yay  --noconfirm -S networkmanager-iwd libxft-bgra polybar \
+		slock-gruvbox-lowcontrast st-luke-git
 }
 
 install_yay () {
@@ -59,12 +57,8 @@ systemctl_enable () {
 microcode_install () {
 	echo "Installing microcode"
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
-	if [ "$cpu_vendor" = "GenuineIntel" ]; then
-		pacman -S intel-ucode
-	else
-		pacman -S amd-ucode
-	fi
-# grub-mkconfig -o /boot/grub/grub.cfg
+	[ "$cpu_vendor" = "GenuineIntel" ] && pacman -S intel-ucode
+ grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 ssd_fstrim () {
@@ -132,8 +126,5 @@ create_passwd
 microcode_install
 ssd_fstrim
 gpu_driver
-su $user_name
-install_yay
-install_packages
-setup_dotfiles
-systemctl_enable
+runuser -l $user_name -c install_yay install_packages setup_dotfiles systemctl_enable \
+	grub-mkconfig -o /boot/grub/grub.cfg
