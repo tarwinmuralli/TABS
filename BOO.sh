@@ -2,24 +2,6 @@
 
 echo "WARNING: YOU ARE RUNNING TARWIN's {BOO}tstraping script Make sure you are running this as root\nMakes sure you have connected to internet\nFor better performance install dash and setup it up"
 
-read -rp "Would you like to proceed? [N/y] " proceed
-
-main () {
-	timedatectl set-ntp true # sets date and time correctly
-	update
-	arch_mirror
-	create_user
-	create_passwd
-	microcode_install
-	ssd_fstrim
-	gpu_driver
-	su $user_name
-	install_yay
-	install_packages
-	setup_dotfiles
-	systemctl_enable
-}
-
 update () {
 	echo 'Updating...'
 	pacman -Syyuu -y
@@ -84,7 +66,8 @@ microcode_install () {
 
 ssd_fstrim () {
 	read -rp "Are you using SSD [Y/n]" check_ssd
-	if [ "${check_ssd}" = "Y" ] || [ -z "${check_ssd}" ]; then
+	if [ "${check_ssd}" = "Y" ] || [ "${check_ssd}" = "y" ] || \
+		[ -z "${check_ssd}" ]; then
 		systemctl enable fstrim.timer
 	fi
 }
@@ -139,8 +122,17 @@ setup_dotfiles () {
 	stow -adopt *
 }
 
-if [ "$proceed" = "Y" ]; then
-	main
-else
-	exit 0
-fi
+# Call all function
+timedatectl set-ntp true # sets date and time correctly
+update
+arch_mirror
+create_user
+create_passwd
+microcode_install
+ssd_fstrim
+gpu_driver
+su $user_name
+install_yay
+install_packages
+setup_dotfiles
+systemctl_enable
