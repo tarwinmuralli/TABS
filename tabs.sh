@@ -22,12 +22,13 @@ pacman_install () {
 	pacman --needed --noconfirm -S \
 		alsa-utils bspwm dash stow dmenu dunst git htop \
 		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
-		neovim networkmanager newsboat noto-fonts noto-fonts-emoji picom \
+		neovim networkmanager newsboat noto-fonts noto-fonts-emoji  \
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
 		ttf-linux-libertine unclutter wget xclip xorg-server pacman-contrib \
 		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper python-pip \
 		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg \
-		gnome-keyring firefox go texlive-core pulseaudio imagemagick
+		gnome-keyring firefox go texlive-core pulseaudio imagemagick poppler \
+		unzip unrar ntfs-3g xcompmgr gzip bzip2 p7zip adwaita-icon-theme
 
 }
 
@@ -78,13 +79,22 @@ user_setup () {
 	rm -rf yay
 
 	# install aur pkg
-	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git
+	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git \
+		nordic-theme-git
 
 	# setup dot files
 	cd "$HOME"
+	mkdir Repos
+	cd Repos
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
-	stow --adopt --dotfiles -t ~ *'
+	stow --adopt --dotfiles -t ~ *
+	cd "$HOME"
+
+	# setup user home directories
+	cd "$HOME"
+	mkdir Media Documents Downloads
+	cd "$HOME"'
 }
 
 system_optimization () {
