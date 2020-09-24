@@ -33,8 +33,30 @@ pacman_install () {
 }
 
 systemctl_enable () {
+	# rtorrent service file
+	cat << END > /etc/systemd/system/rtorrent@.service
+[Unit]
+Description=rTorrent for %I
+After=network.target
+
+[Service]
+Type=simple
+User=%I
+Group=%I
+WorkingDirectory=/home/%I
+ExecStartPre=-/bin/rm -f /home/%I/.config/rtorrent/session/rtorrent.lock
+ExecStart=/usr/bin/rtorrent -o system.daemon.set=true
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+END
+
 	systemctl enable fstrim.timer
 	systemctl enable NetworkManager
+	systemctl enable rtorrent@"$user_name"
+
 }
 
 microcode_install () {
@@ -80,7 +102,7 @@ user_setup () {
 
 	# install aur pkg
 	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git \
-		nordic-theme-git
+		nordic-theme-git lf
 
 	# setup dot files
 	cd "$HOME"
@@ -132,6 +154,7 @@ main () {
 	systemctl_enable >> log 2>&1
 	echo "Setting up user..."
 	user_setup >> log 2>&1
+	echo "Check the log file for more information"
 }
 
 main
