@@ -24,10 +24,10 @@ pacman_install () {
 		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
 		neovim networkmanager newsboat noto-fonts noto-fonts-emoji picom \
 		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
-		ttf-linux-libertine unclutter wget xclip xorg-server \
+		ttf-linux-libertine unclutter wget xclip xorg-server pacman-contrib \
 		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper python-pip \
 		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg \
-		gnome-keyring firefox
+		gnome-keyring firefox go texlive-core pulseaudio imagemagick
 
 }
 
@@ -72,7 +72,8 @@ user_setup () {
 	cd "$HOME"
 	git clone https://aur.archlinux.org/yay.git
 	cd yay
-	makepkg -si
+	makepkg
+	ls | grep .*zst | pacman --noconfirm -U -
 	cd "$HOME"
 	rm -rf yay
 
@@ -83,7 +84,7 @@ user_setup () {
 	cd "$HOME"
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
-	stow --adopt *'
+	stow --adopt --dotfiles -t ~ *'
 }
 
 system_optimization () {
@@ -103,24 +104,24 @@ main () {
 	# Call all function
 	timedatectl set-ntp true # sets date and time correctly
 	echo 'Updating...'
-	pacman --noconfirm --needed -Syyuu > log
+	pacman --noconfirm --needed -Syyuu > log 2>&1
 	echo "Updating mirrors..."
-	arch_mirror # set mirror to the faster
+	arch_mirror >> log 2>&1
 	echo "Creating User..."
 	create_user
 	create_passwd
 	echo "Installing microcode"
-	microcode_install >> log
+	microcode_install >> log 2>&1
 	echo "Checkig for ssd..."
-	ssd_fstrim >> log
+	ssd_fstrim >> log 2>&1
 	echo "Installing GPU driver"
 	gpu_driver
 	echo "Installing packages..."
-	pacman_install >> log
+	pacman_install >> log 2>&1
 	echo "Enabling services..."
-	systemctl_enable >> log
+	systemctl_enable >> log 2>&1
 	echo "Setting up user..."
-	user_setup >> log
+	user_setup >> log 2>&1
 }
 
 main
