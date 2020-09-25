@@ -53,7 +53,6 @@ RestartSec=3
 WantedBy=multi-user.target
 END
 
-	systemctl enable fstrim.timer
 	systemctl enable NetworkManager
 	systemctl enable rtorrent@"$user_name"
 
