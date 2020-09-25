@@ -1,12 +1,8 @@
 #!/bin/sh
 
-echo 'WARNING: YOU ARE RUNNING TABS (Tarwin_s Auto Bootstraping Script)
-Make sure you are running this as root
-Makes sure you have connected to internet'
-
 create_user () {
 	echo "User name must be lower case and no space"
-	read -rp 'Enter you user name: ' user_name
+	read -rp 'Enter user name: ' user_name
 	user_name=$(echo "$user_name" | tr 'A-Z' 'a-z') # Changes user name to lowercase
 	useradd -mG wheel "$user_name" -s /bin/bash
 }
@@ -20,16 +16,22 @@ create_passwd () {
 
 pacman_install () {
 	pacman --needed --noconfirm -S \
-		alsa-utils bspwm dash stow dmenu dunst git htop \
-		libnotify libva-utils linux-firmware man-db mlocate mpv neofetch \
-		neovim networkmanager newsboat noto-fonts noto-fonts-emoji  \
-		rtorrent sxhkd ttf-inconsolata ttf-inconsolata ttf-joypixels \
-		ttf-linux-libertine unclutter wget xclip xorg-server pacman-contrib \
-		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper python-pip \
-		youtube-dl zathura zathura-pdf-poppler pandoc base-devel ffmpeg \
-		gnome-keyring firefox go texlive-core pulseaudio imagemagick poppler \
-		unzip unrar ntfs-3g xcompmgr gzip bzip2 p7zip adwaita-icon-theme
-
+		bspwm sxhkhd xcompmgr \ # WM
+		git python python-pip go base-devel \ # DEV UTILS
+		youtube-dl alsa-utils mlocate wget ffmpeg ntfs-3g imagemagick \ # UTILS
+		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper xorg-server \ # X
+		unclutter xclip \ # X
+		zathura zathura-pdf-poppler pandoc texlive-core poppler \ # DOCUMENTS
+		unzip unrar  gzip bzip2 p7zip # Archivers
+		ttf-linux-libertine ttf-inconsolata ttf-inconsolata \ # FONTS
+		noto-fonts noto-fonts-emoji ttf-joypixels \ # FONTS
+		dash stow dmenu gnome-keyring \ # MISC
+		dunst libnotify \ # NOTIFICATION
+		libva-utils linux-firmware man-db pulseaudio networkmanager \ # SYS
+		pacman-contrib \ # SYS
+		newsboat rtorrent firefox \ # INTERNET
+		mpv adwaita-icon-theme pavucontrol \ # GUI
+		neofetch neovim htop # CLI
 }
 
 systemctl_enable () {
@@ -55,7 +57,6 @@ END
 
 	systemctl enable NetworkManager
 	systemctl enable rtorrent@"$user_name"
-
 }
 
 microcode_install () {
@@ -73,7 +74,7 @@ ssd_fstrim () {
 
 arch_mirror () {
 	pacman --needed -S --noconfirm  reflector
-	reflector --verbose --latest 5 --sort rate --save /etc/pacman.d/mirrorlist
+	reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist
 }
 
 gpu_driver () {
@@ -134,6 +135,9 @@ system_optimization () {
 }
 
 main () {
+	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
+	Make sure you are running this as root
+	Makes sure you have connected to internet"
 	read -rp "Proceed? [Y/n] " -n 1 continue
 	continue=$(echo "$continue" | tr A-Z a-z)
 	[ "$continue" = n ] && exit
