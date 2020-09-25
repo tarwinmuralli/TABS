@@ -109,7 +109,7 @@ user_setup () {
 	cd Repos
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
-	stow --adopt --dotfiles -t ~ *
+	stow --adopt -t ~ *
 	cd "$HOME"
 
 	# setup user home directories
