@@ -116,6 +116,8 @@ user_setup () {
 	# setup user home directories
 	cd "$HOME"
 	mkdir Media Documents Downloads
+	cd "$HOME"/Media
+	mkdir Music Pictures Videos Desktop
 	cd "$HOME"
 
 	# chmod everything in .local/bin
