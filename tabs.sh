@@ -9,7 +9,7 @@ create_user () {
 	read -rp 'Enter you user name: ' user_name
 	user_name=$(echo "$user_name" | tr 'A-Z' 'a-z') # Changes user name to lowercase
 	useradd -mG wheel "$user_name" -s /bin/bash
-	}
+}
 
 create_passwd () {
 	read -rp "Enter password for ${user_name}: " user_password
@@ -61,13 +61,14 @@ END
 
 microcode_install () {
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
-	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode && grub-mkconfig -o /boot/grub/grub.cfg
-	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode && grub-mkconfig -o /boot/grub/grub.cfg
+	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode && \
+		grub-mkconfig -o /boot/grub/grub.cfg
+	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode && \
+		grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 ssd_fstrim () {
-	check_ssd=$(cat /sys/block/sd*/queue/rotational | paste -sd '+')
-	check_ssd=$((check_ssd))
+	check_ssd=$(($(cat /sys/block/sd*/queue/rotational | paste -sd '+')))
 	[ $check_ssd -gt 0 ] && systemctl enable fstrim.timer
 }
 
@@ -77,7 +78,7 @@ arch_mirror () {
 }
 
 gpu_driver () {
-	read -rp "What gpu are you using A-(AMD) B-(INTEL) C-(ATI) [A/B/C] : " gpu
+	read -rp "What gpu are you using A-(INTEL) B-(AMD) C-(ATI) [A/B/C] : " gpu
 	gpu=$(echo $gpu | tr A-Z a-z)
 	if [ "$gpu" = "a" ]; then
 		pacman -S xf86-video-intel
