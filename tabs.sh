@@ -79,7 +79,7 @@ arch_mirror () {
 
 gpu_driver () {
 	read -rp "What gpu are you using A-(INTEL) B-(AMD) C-(ATI) [A/B/C] : " gpu
-	gpu=$(echo $gpu | tr A-Z a-z)
+	gpu=$(echo "$gpu" | tr A-Z a-z)
 	if [ "$gpu" = "a" ]; then
 		pacman -S xf86-video-intel
 	elif [ "$gpu" = "b" ]; then
@@ -102,8 +102,7 @@ user_setup () {
 	rm -rf yay
 
 	# install aur pkg
-	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git \
-		nordic-theme-git lf
+	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git nordic-theme-git lf
 
 	# setup dot files
 	cd "$HOME"
@@ -117,7 +116,12 @@ user_setup () {
 	# setup user home directories
 	cd "$HOME"
 	mkdir Media Documents Downloads
-	cd "$HOME"'
+	cd "$HOME"
+
+	# chmod everything in .local/bin
+	cd "$HOME"
+	cd .local/bin
+	chmod +x *'
 }
 
 system_optimization () {
