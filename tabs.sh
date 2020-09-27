@@ -152,12 +152,14 @@ main () {
 	echo "Creating User..."
 	create_user
 	create_passwd
+	echo "Installing GPU driver"
+	gpu_driver
 	echo "Installing microcode"
 	microcode_install >> log 2>&1
 	echo "Checkig for ssd..."
 	ssd_fstrim >> log 2>&1
-	echo "Installing GPU driver"
-	gpu_driver
+	echo "Optimizing System"
+	system_optimization >> log 2>&1
 	echo "Installing packages..."
 	pacman_install >> log 2>&1
 	echo "Enabling services..."
