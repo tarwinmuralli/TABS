@@ -36,4 +36,4 @@ newsboat rtorrent firefox
 mpv adwaita-icon-theme pavucontrol pcmamfm flameshot
 
 # CLI
-neofetch neovim htop
+neofetch neovim htop cmus
