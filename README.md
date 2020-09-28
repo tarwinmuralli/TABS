@@ -1,2 +1,2 @@
 # TABS (Tarwin's Auto Bootstraping Script)
-I am not very well versed at shell scripting any help will be very helpfull
+This script was meant to for me to be able to setup my computer really fast after a arch install
