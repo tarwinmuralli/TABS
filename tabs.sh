@@ -15,56 +15,24 @@ create_passwd () {
 }
 
 pacman_install () {
-	pacman --needed --noconfirm -S \
-		bspwm sxhkhd xcompmgr \ # WM
-		git python python-pip go base-devel \ # DEV UTILS
-		youtube-dl alsa-utils mlocate wget ffmpeg ntfs-3g imagemagick \ # UTILS
-		xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper xorg-server \ # X
-		unclutter xclip \ # X
-		zathura zathura-pdf-poppler pandoc texlive-core poppler \ # DOCUMENTS
-		unzip unrar  gzip bzip2 p7zip # Archivers
-		ttf-linux-libertine ttf-inconsolata ttf-inconsolata \ # FONTS
-		noto-fonts noto-fonts-emoji ttf-joypixels \ # FONTS
-		dash stow dmenu gnome-keyring \ # MISC
-		dunst libnotify \ # NOTIFICATION
-		libva-utils linux-firmware man-db pulseaudio networkmanager \ # SYS
-		pacman-contrib \ # SYS
-		newsboat rtorrent firefox \ # INTERNET
-		mpv adwaita-icon-theme pavucontrol \ # GUI
-		neofetch neovim htop # CLI
+
+	sed "/^$/d; /#/d;" packagest.txt | paste -sd ' ' | \
+		pacman --needed --noconfirm -S -
 }
 
 systemctl_enable () {
 	# rtorrent service file
-	cat << END > /etc/systemd/system/rtorrent@.service
-[Unit]
-Description=rTorrent for %I
-After=network.target
-
-[Service]
-Type=simple
-User=%I
-Group=%I
-WorkingDirectory=/home/%I
-ExecStartPre=-/bin/rm -f /home/%I/.config/rtorrent/session/rtorrent.lock
-ExecStart=/usr/bin/rtorrent -o system.daemon.set=true
-Restart=on-failure
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-END
-
+	cp rtorrent@.service /etc/systemd/system/rtorrent@.service
 	systemctl enable NetworkManager
 	systemctl enable rtorrent@"$user_name"
 }
 
 microcode_install () {
 	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
-	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode && \
-		grub-mkconfig -o /boot/grub/grub.cfg
-	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode && \
-		grub-mkconfig -o /boot/grub/grub.cfg
+	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
+	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
+	grub-mkconfig -o /boot/grub/grub.cfg
+
 }
 
 ssd_fstrim () {
@@ -96,13 +64,12 @@ user_setup () {
 	cd "$HOME"
 	git clone https://aur.archlinux.org/yay.git
 	cd yay
-	makepkg
-	ls | grep .*zst | pacman --noconfirm -U -
+	makepkg --noconfirm -si
 	cd "$HOME"
 	rm -rf yay
-
 	# install aur pkg
-	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast st-luke-git nordic-theme-git lf
+	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast \
+		st-luke-git nordic-theme-git lf
 
 	# setup dot files
 	cd "$HOME"
@@ -115,9 +82,9 @@ user_setup () {
 
 	# setup user home directories
 	cd "$HOME"
-	mkdir Media Documents Downloads
-	cd "$HOME"/Media
-	mkdir Music Pictures Videos Desktop
+	mkdir media doc dl
+	cd "$HOME"/media
+	mkdir music pics videos desktop
 	cd "$HOME"
 
 	# chmod everything in .local/bin
@@ -128,27 +95,25 @@ user_setup () {
 
 system_optimization () {
 	[ ! -d /etc/sysctl.d ] && mkdir /etc/sysctl.d
-	echo 'vm.swappiness = 10
-	vm.vfs_cache_pressure = 50
-	vm.watermark_scale_factor = 200
-	vm.dirty_ratio = 3' >/etc/sysctl.d/99-sysctl.conf
+	cp 99-sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	# Use all cores for compilation
 	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 }
 
 main () {
+	[ "$(id -u)" != "0" ] && \
+		{echo "Make sure you are running this as root"; exit}
 	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
-	Make sure you are running this as root
 	Makes sure you have connected to internet"
 	read -rp "Proceed? [Y/n] " -n 1 continue
 	continue=$(echo "$continue" | tr A-Z a-z)
 	[ "$continue" = n ] && exit
-	# Call all function
 	timedatectl set-ntp true # sets date and time correctly
-	echo 'Updating...'
-	pacman --noconfirm --needed -Syyuu > log 2>&1
+	# Call all function
 	echo "Updating mirrors..."
 	arch_mirror >> log 2>&1
+	echo 'Updating...'
+	pacman --noconfirm --needed -Syu > log 2>&1
 	echo "Creating User..."
 	create_user
 	create_passwd

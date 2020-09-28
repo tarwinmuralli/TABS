@@ -1,0 +1,39 @@
+# WM
+bspwm sxhkhd xcompmgr
+
+# DEV UTILS
+git python python-pip go base-devel
+
+# UTILS
+youtube-dl alsa-utils mlocate wget ffmpeg imagemagick gvfs
+
+# Xorg
+unclutter xclip xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper xorg-server
+xorg-xbacklight
+
+# DOCUMENTS
+zathura zathura-pdf-poppler pandoc texlive-core poppler
+
+# Archivers
+unzip unrar  gzip bzip2 p7zip
+
+# FONTS
+ttf-inconsolata noto-fonts noto-fonts-emoji
+
+# MISC
+dash stow dmenu gnome-keyring
+
+# NOTIFICATION
+dunst libnotify
+
+# SYS
+libva-utils linux-firmware man-db pulseaudio pulseaudio-alsa networkmanager pacman-contrib
+
+# INTERNET
+newsboat rtorrent firefox
+
+# GUI
+mpv adwaita-icon-theme pavucontrol pcmamfm flameshot
+
+# CLI
+neofetch neovim htop
