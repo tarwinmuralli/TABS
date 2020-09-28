@@ -36,7 +36,8 @@ microcode_install () {
 }
 
 ssd_fstrim () {
-	check_ssd=$(($(cat /sys/block/sd*/queue/rotational | paste -sd '+')))
+	check_ssd=$(cat /sys/block/sd*/queue/rotational | paste -sd '+')
+	check_ssd=$((check_ssd))
 	[ $check_ssd -gt 0 ] && systemctl enable fstrim.timer
 }
 
@@ -78,14 +79,12 @@ user_setup () {
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
 	stow --adopt -t ~ *
-	cd "$HOME"
 
 	# setup user home directories
 	cd "$HOME"
 	mkdir media doc dl
 	cd "$HOME"/media
 	mkdir music pics videos desktop
-	cd "$HOME"
 
 	# chmod everything in .local/bin
 	cd "$HOME"
@@ -101,19 +100,23 @@ system_optimization () {
 }
 
 main () {
+	# check for root if not exit
 	[ "$(id -u)" != "0" ] && \
 		{echo "Make sure you are running this as root"; exit}
+
 	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
 	Makes sure you have connected to internet"
 	read -rp "Proceed? [Y/n] " -n 1 continue
 	continue=$(echo "$continue" | tr A-Z a-z)
 	[ "$continue" = n ] && exit
+
 	timedatectl set-ntp true # sets date and time correctly
 	# Call all function
+
 	echo "Updating mirrors..."
-	arch_mirror >> log 2>&1
+	arch_mirror > log 2>&1
 	echo 'Updating...'
-	pacman --noconfirm --needed -Syu > log 2>&1
+	pacman --noconfirm --needed -Syu >> log 2>&1
 	echo "Creating User..."
 	create_user
 	create_passwd
