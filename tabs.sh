@@ -1,5 +1,4 @@
 #!/bin/sh
-
 create_user () {
 	echo "User name must be lower case and no space"
 	read -rp 'Enter user name: ' user_name
@@ -102,7 +101,7 @@ system_optimization () {
 main () {
 	# check for root if not exit
 	[ "$(id -u)" != "0" ] && \
-		{echo "Make sure you are running this as root"; exit}
+		{ echo "Make sure you are running this as root"; exit; }
 
 	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
 	Makes sure you have connected to internet"
