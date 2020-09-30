@@ -1,4 +1,43 @@
 #!/bin/sh
+
+main () {
+	# check for root if not exit
+	[ "$(id -u)" != "0" ] && \
+		{ echo "Make sure you are running this as root"; exit; }
+
+	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
+	Makes sure you have connected to internet"
+	read -rp "Proceed? [Y/n] " -n 1 continue
+	continue=$(echo "$continue" | tr A-Z a-z)
+	[ "$continue" = n ] && exit
+
+	timedatectl set-ntp true # sets date and time correctly
+	# Call all function
+
+	echo "Updating mirrors..."
+	arch_mirror > log 2>&1
+	echo 'Updating...'
+	pacman --noconfirm --needed -Syu >> log 2>&1
+	echo "Creating User..."
+	create_user
+	create_passwd
+	echo "Installing GPU driver"
+	gpu_driver
+	echo "Installing microcode"
+	microcode_install >> log 2>&1
+	echo "Checkig for ssd..."
+	ssd_fstrim >> log 2>&1
+	echo "Optimizing System"
+	system_optimization >> log 2>&1
+	echo "Installing packages..."
+	pacman_install >> log 2>&1
+	echo "Enabling services..."
+	systemctl_enable >> log 2>&1
+	echo "Setting up user..."
+	user_setup >> log 2>&1
+	echo "Check the log file for more information"
+}
+
 create_user () {
 	echo "User name must be lower case and no space"
 	read -rp 'Enter user name: ' user_name
@@ -46,7 +85,7 @@ arch_mirror () {
 }
 
 gpu_driver () {
-	read -rp "What gpu are you using A-(INTEL) B-(AMD) C-(ATI) [A/B/C] : " gpu
+	read -rp "What gpu are you using A-(INTEL) B-(AMD) C-(ATI) [A/B/C] : " -n 1 gpu
 	gpu=$(echo "$gpu" | tr A-Z a-z)
 	if [ "$gpu" = "a" ]; then
 		pacman -S xf86-video-intel
@@ -96,44 +135,6 @@ system_optimization () {
 	cp 99-sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	# Use all cores for compilation
 	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
-}
-
-main () {
-	# check for root if not exit
-	[ "$(id -u)" != "0" ] && \
-		{ echo "Make sure you are running this as root"; exit; }
-
-	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
-	Makes sure you have connected to internet"
-	read -rp "Proceed? [Y/n] " -n 1 continue
-	continue=$(echo "$continue" | tr A-Z a-z)
-	[ "$continue" = n ] && exit
-
-	timedatectl set-ntp true # sets date and time correctly
-	# Call all function
-
-	echo "Updating mirrors..."
-	arch_mirror > log 2>&1
-	echo 'Updating...'
-	pacman --noconfirm --needed -Syu >> log 2>&1
-	echo "Creating User..."
-	create_user
-	create_passwd
-	echo "Installing GPU driver"
-	gpu_driver
-	echo "Installing microcode"
-	microcode_install >> log 2>&1
-	echo "Checkig for ssd..."
-	ssd_fstrim >> log 2>&1
-	echo "Optimizing System"
-	system_optimization >> log 2>&1
-	echo "Installing packages..."
-	pacman_install >> log 2>&1
-	echo "Enabling services..."
-	systemctl_enable >> log 2>&1
-	echo "Setting up user..."
-	user_setup >> log 2>&1
-	echo "Check the log file for more information"
 }
 
 main
