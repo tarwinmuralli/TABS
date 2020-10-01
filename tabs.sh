@@ -108,7 +108,7 @@ user_setup () {
 	rm -rf yay
 	# install aur pkg
 	yay  --noconfirm -Sy libxft-bgra polybar slock-gruvbox-lowcontrast \
-		st-luke-git nordic-theme-git lf
+		st-luke-git nordic-theme-git
 
 	# setup dot files
 	cd "$HOME"
