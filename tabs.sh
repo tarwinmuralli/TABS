@@ -112,8 +112,8 @@ user_setup () {
 
 	# setup dot files
 	cd "$HOME"
-	mkdir Repos
-	cd Repos
+	mkdir repos
+	cd repos
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
 	stow --adopt -t ~ *
