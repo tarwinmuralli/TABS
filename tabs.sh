@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 main () {
 	# check for root if not exit

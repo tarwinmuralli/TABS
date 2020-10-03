@@ -21,7 +21,7 @@ unzip unrar  gzip bzip2 p7zip
 ttf-inconsolata noto-fonts noto-fonts-emoji
 
 # MISC
-dash stow dmenu gnome-keyring
+dash stow dmenu gnome-keyring libsecret
 
 # NOTIFICATION
 dunst libnotify
@@ -36,4 +36,4 @@ newsboat rtorrent firefox
 mpv adwaita-icon-theme pavucontrol pcmamfm flameshot
 
 # CLI
-neofetch neovim htop cmus vifm
+neofetch neovim htop cmus vifm archlinux-keyring
