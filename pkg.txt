@@ -18,7 +18,7 @@ xorg-xev
 xorg-xinit
 xorg-xprop
 xorg-xrandr
-xwallpaper,
+xwallpaper
 xorg-server
 xorg-xbacklight
 zathura
@@ -54,10 +54,11 @@ firefox
 mpv
 adwaita-icon-theme
 pavucontrol
-pcmamfm
+pcmanfm
 flameshot
 neofetch
 neovim
 htop
 cmus
+polkit
 vifm
