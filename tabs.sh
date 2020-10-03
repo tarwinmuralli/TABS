@@ -55,7 +55,7 @@ create_passwd () {
 
 pacman_install () {
 
-	pacman --needed --noconfirm -S - < packages.txt
+	pacman --needed --noconfirm -S - < pkg.txt
 }
 
 systemctl_enable () {
