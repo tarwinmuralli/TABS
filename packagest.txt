@@ -1,39 +1,63 @@
-# WM
-bspwm sxhkhd xcompmgr
-
-# DEV UTILS
-git python python-pip go base-devel
-
-# UTILS
-youtube-dl alsa-utils mlocate wget ffmpeg imagemagick gvfs
-
-# Xorg
-unclutter xclip xorg-xev xorg-xinit xorg-xprop xorg-xrandr xwallpaper xorg-server
+bspwm
+sxhkd
+xcompmgr
+git
+python
+python-pip
+base-devel
+youtube-dl
+alsa-utils
+mlocate
+wget
+ffmpeg
+imagemagick
+gvfs
+unclutter
+xclip
+xorg-xev
+xorg-xinit
+xorg-xprop
+xorg-xrandr
+xwallpaper,
+xorg-server
 xorg-xbacklight
-
-# DOCUMENTS
-zathura zathura-pdf-poppler pandoc texlive-core poppler
-
-# Archivers
-unzip unrar  gzip bzip2 p7zip
-
-# FONTS
-ttf-inconsolata noto-fonts noto-fonts-emoji
-
-# MISC
-dash stow dmenu gnome-keyring libsecret
-
-# NOTIFICATION
-dunst libnotify
-
-# SYS
-libva-utils linux-firmware man-db pulseaudio pulseaudio-alsa networkmanager pacman-contrib
-
-# INTERNET
-newsboat rtorrent firefox
-
-# GUI
-mpv adwaita-icon-theme pavucontrol pcmamfm flameshot
-
-# CLI
-neofetch neovim htop cmus vifm archlinux-keyring
+zathura
+zathura-pdf-poppler
+pandoc
+texlive-core
+poppler
+unzip
+unrar
+gzip
+bzip2
+p7zip
+ttf-inconsolata
+noto-fonts
+noto-fonts-emoji
+dash
+stow
+dmenu
+gnome-keyring
+libsecret
+dunst
+libnotify
+libva-utils
+linux-firmware
+man-db
+pulseaudio
+pulseaudio-alsa
+networkmanager
+pacman-contrib
+newsboat
+rtorrent
+firefox
+mpv
+adwaita-icon-theme
+pavucontrol
+pcmamfm
+flameshot
+neofetch
+neovim
+htop
+cmus
+vifm

@@ -55,8 +55,7 @@ create_passwd () {
 
 pacman_install () {
 
-	sed "/^$/d; /#/d;" packagest.txt | paste -sd ' ' | \
-		pacman --needed --noconfirm -S -
+	pacman --needed --noconfirm -S - < packages.txt
 }
 
 systemctl_enable () {
