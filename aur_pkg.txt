@@ -1,0 +1,4 @@
+polybar
+slock-gruvbox-lowcontrast
+st-luke-git
+nordic-theme-git

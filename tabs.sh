@@ -28,14 +28,20 @@ main () {
 	microcode_install >> log 2>&1
 	echo "Checkig for ssd..."
 	ssd_fstrim >> log 2>&1
-	echo "Optimizing System"
+	echo "Optimizing System..."
 	system_optimization >> log 2>&1
 	echo "Installing packages..."
-	pacman_install >> log 2>&1
+	pacman --needed --noconfirm -S - < pkg.txt >> log 2>&1
 	echo "Enabling services..."
 	systemctl_enable >> log 2>&1
-	echo "Setting up user..."
-	user_setup >> log 2>&1
+	echo "Creating user directories..."
+	user_directory >> log 2>&1
+	echo "Installing yay..."
+	install_yay >> log 2>&1
+	echo "Installing aur packages..."
+	install_aur_pkg >> log 2>&1
+	echo "Setting up dot files..."
+	setup_dotfiles >> log 2>&1
 	echo "Check the log file for more information"
 }
 
@@ -51,11 +57,6 @@ create_passwd () {
 	echo "${user_name}:${user_password}" | chpasswd
 	sed -i 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
 
-}
-
-pacman_install () {
-
-	pacman --needed --noconfirm -S - < pkg.txt
 }
 
 systemctl_enable () {
@@ -97,41 +98,44 @@ gpu_driver () {
 
 }
 
-user_setup () {
+user_directory () {
 	su - "$user_name" -c '
-	# Install Yay
 	cd "$HOME"
+	mkdir -v dox dl pix vids
+	mkdir -v -p "$HOME"/.local/src'
+}
+
+install_yay () {
+	su - "$user_name" -c '
+	cd "$HOME"/.local/src
 	git clone https://aur.archlinux.org/yay.git
 	cd yay
-	makepkg --noconfirm -si
-	cd "$HOME"
-	rm -rf yay
-	# install aur pkg
-	yay  --noconfirm -Sy polybar slock-gruvbox-lowcontrast \
-		st-luke-git nordic-theme-git
+	makepkg --noconfirm -si'
+}
 
-	# setup dot files
+install_aur_pkg () {
 	cd "$HOME"
-	mkdir repos
-	cd repos
+	cp aur_pkg.txt /home/"$user_name"
+	su - "$user_name" -c '
+	yay  --noconfirm -S - < aur_pkg.txt
+	rm -rf aur_pkg.txt'
+}
+
+setup_dotfiles () {
+	su - "$user_name" -c '
+	cd "$HOME"
+	cd "$HOME"/.local/src
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
 	stow --adopt -t ~ *
-
-	# setup user home directories
-	cd "$HOME"
-	mkdir media doc dl
-	cd "$HOME"/media
-	mkdir music pics videos desktop
-
 	# chmod everything in .local/bin
-	cd "$HOME"
-	cd .local/bin
+	cd "$HOME"/.local/bin
 	chmod +x *'
+
 }
 
 system_optimization () {
-	[ ! -d /etc/sysctl.d ] && mkdir /etc/sysctl.d
+	[ ! -d /etc/sysctl.d ] && mkdir -v /etc/sysctl.d
 	cp 99-sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	# Use all cores for compilation
 	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
