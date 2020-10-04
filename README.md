@@ -8,7 +8,7 @@ git clone https://github.com/tarwinmuralli/TABS.git
 cd TABS
 sh tabs.sh
 ```
-### Using your own packages
+## Using your own packages
 You can edit the pkg.txt and aur_pkg.txt to install your desired packages
 
 ## Contributing

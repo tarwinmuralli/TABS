@@ -7,7 +7,10 @@ main () {
 		{ echo "Make sure you are running this as root"; exit; }
 
 	echo "WARNING: YOU ARE RUNNING TABS (Tarwin's Auto Bootstraping Script)
-	Makes sure you have connected to internet"
+	Makes sure you are connected to the internet before proceeding
+	You can pass your own dotfiles repo as an argument
+	Make sure your dotfiles has been setup for using gnu stow
+	If there is no argument it defaults to using my dotfiles"
 	read -rp "Proceed? [Y/n] " -n 1 continue
 	continue=$(echo "$continue" | tr A-Z a-z)
 	[ "$continue" = n ] && exit
@@ -41,7 +44,7 @@ main () {
 	echo "Installing aur packages..."
 	install_aur_pkg >> log 2>&1
 	echo "Setting up dot files..."
-	setup_dotfiles >> log 2>&1
+	setup_dotfiles "$@" >> log 2>&1
 	echo "Check the log file for more information"
 }
 
@@ -118,12 +121,12 @@ install_aur_pkg () {
 }
 
 setup_dotfiles () {
+	dofiles="${1:-"https://github.com/tarwinmuralli/dotfiles.git"}"
+	sudo -u "$user_name" git clone "$dotfiles" /home/"$user_name"/.local/src/dotfiles
 	su - "$user_name" -c '
 	cd "$HOME"
 	rm -rf .bash_history .bash_logout .bash_profile .bashrc
-	cd "$HOME"/.local/src
-	git clone https://github.com/tarwin1/dotfiles.git
-	cd dotfiles
+	cd "$HOME"/.local/src/dotfiles
 	stow -t ~ *
 	# chmod everything in .local/bin
 	cd "$HOME"/.local/bin
@@ -137,4 +140,4 @@ system_optimization () {
 	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 }
 
-main
+main "$@"
