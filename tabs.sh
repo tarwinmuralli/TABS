@@ -101,7 +101,7 @@ gpu_driver () {
 user_directory () {
 	su - "$user_name" -c '
 	cd "$HOME"
-	mkdir -v dox dl pix vids
+	mkdir -v dox dl pix vids music
 	mkdir -v -p "$HOME"/.local/src'
 }
 
