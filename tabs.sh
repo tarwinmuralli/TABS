@@ -56,7 +56,6 @@ create_passwd () {
 	read -rp "Enter password for ${user_name}: " user_password
 	echo "${user_name}:${user_password}" | chpasswd
 	sed -i 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
-
 }
 
 systemctl_enable () {
@@ -71,7 +70,6 @@ microcode_install () {
 	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
 	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
 	grub-mkconfig -o /boot/grub/grub.cfg
-
 }
 
 ssd_fstrim () {
@@ -95,7 +93,6 @@ gpu_driver () {
 	elif [ "$gpu" = "c" ]; then
 		pacman -S xf86-video-ati
 	fi
-
 }
 
 user_directory () {
@@ -114,7 +111,6 @@ install_yay () {
 }
 
 install_aur_pkg () {
-	cd "$HOME"
 	cp aur_pkg.txt /home/"$user_name"
 	su - "$user_name" -c '
 	yay  --noconfirm -S - < aur_pkg.txt
@@ -124,14 +120,14 @@ install_aur_pkg () {
 setup_dotfiles () {
 	su - "$user_name" -c '
 	cd "$HOME"
+	rm -rf .bash_history .bash_logout .bash_profile .bashrc
 	cd "$HOME"/.local/src
 	git clone https://github.com/tarwin1/.files.git
 	cd .files
-	stow --adopt -t ~ *
+	stow -t ~ *
 	# chmod everything in .local/bin
 	cd "$HOME"/.local/bin
 	chmod +x *'
-
 }
 
 system_optimization () {
