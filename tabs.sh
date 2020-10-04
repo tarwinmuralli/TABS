@@ -121,7 +121,7 @@ install_aur_pkg () {
 }
 
 setup_dotfiles () {
-	dofiles="${1:-"https://github.com/tarwinmuralli/dotfiles.git"}"
+	dotfiles="${1:-"https://github.com/tarwinmuralli/dotfiles.git"}"
 	sudo -u "$user_name" git clone "$dotfiles" /home/"$user_name"/.local/src/dotfiles
 	su - "$user_name" -c '
 	cd "$HOME"

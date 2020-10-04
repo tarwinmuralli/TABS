@@ -62,4 +62,3 @@ htop
 cmus
 polkit
 vifm
-task-spooler
