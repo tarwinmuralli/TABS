@@ -122,8 +122,8 @@ setup_dotfiles () {
 	cd "$HOME"
 	rm -rf .bash_history .bash_logout .bash_profile .bashrc
 	cd "$HOME"/.local/src
-	git clone https://github.com/tarwin1/.files.git
-	cd .files
+	git clone https://github.com/tarwin1/dotfiles.git
+	cd dotfiles
 	stow -t ~ *
 	# chmod everything in .local/bin
 	cd "$HOME"/.local/bin
