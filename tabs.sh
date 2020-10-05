@@ -39,6 +39,7 @@ main () {
 	systemctl_enable >> log 2>&1
 	echo "Creating user directories..."
 	user_directory >> log 2>&1
+	## TODO : vim plug
 	echo "Installing yay..."
 	install_yay >> log 2>&1
 	echo "Installing aur packages..."
@@ -69,7 +70,7 @@ systemctl_enable () {
 }
 
 microcode_install () {
-	cpu_vendor=$(lscp -vu | grep Vendor | awk -F ': +' '{print $2}')
+	cpu_vendor=$(lscpu -vu | grep Vendor | awk -F ': +' '{print $2}')
 	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
 	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
 	grub-mkconfig -o /boot/grub/grub.cfg
@@ -114,6 +115,7 @@ install_yay () {
 }
 
 install_aur_pkg () {
+	## TODO Keeps Failing
 	cp -v aur_pkg.txt /home/"$user_name"
 	su - "$user_name" -c '
 	yay  --noconfirm -S - < aur_pkg.txt
