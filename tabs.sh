@@ -69,9 +69,9 @@ systemctl_enable () {
 }
 
 microcode_install () {
-	cp -vu_vendor=$(lscp -vu | grep Vendor | awk -F ': +' '{print $2}')
-	[ "$cp -vu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
-	[ "$cp -vu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
+	cpu_vendor=$(lscp -vu | grep Vendor | awk -F ': +' '{print $2}')
+	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
+	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
 	grub-mkconfig -o /boot/grub/grub.cfg
 }
 
