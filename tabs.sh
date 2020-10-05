@@ -63,15 +63,15 @@ create_passwd () {
 
 systemctl_enable () {
 	# rtorrent service file
-	cp rtorrent@.service /etc/systemd/system/rtorrent@.service
+	cp -v rtorrent@.service /etc/systemd/system/rtorrent@.service
 	systemctl enable NetworkManager
 	systemctl enable rtorrent@"$user_name"
 }
 
 microcode_install () {
-	cpu_vendor=$(lscpu | grep Vendor | awk -F ': +' '{print $2}')
-	[ "$cpu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
-	[ "$cpu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
+	cp -vu_vendor=$(lscp -vu | grep Vendor | awk -F ': +' '{print $2}')
+	[ "$cp -vu_vendor" = "GenuineIntel" ] && pacman --needed --noconfirm -S intel-ucode
+	[ "$cp -vu_vendor" = "AuthenticAMD" ] && pacman --needed --noconfirm -S amd-ucode
 	grub-mkconfig -o /boot/grub/grub.cfg
 }
 
@@ -114,7 +114,7 @@ install_yay () {
 }
 
 install_aur_pkg () {
-	cp aur_pkg.txt /home/"$user_name"
+	cp -v aur_pkg.txt /home/"$user_name"
 	su - "$user_name" -c '
 	yay  --noconfirm -S - < aur_pkg.txt
 	rm -rf aur_pkg.txt'
@@ -135,7 +135,7 @@ setup_dotfiles () {
 
 system_optimization () {
 	[ ! -d /etc/sysctl.d ] && mkdir -v /etc/sysctl.d
-	cp 99-sysctl.conf /etc/sysctl.d/99-sysctl.conf
+	cp -v 99-sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	# Use all cores for compilation
 	sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 }
