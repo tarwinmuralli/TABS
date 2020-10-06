@@ -90,6 +90,8 @@ arch_mirror () {
 
 gpu_driver () {
 	read -rp "What gpu are you using A-(INTEL) B-(AMD) C-(ATI) [A/B/C] : " -n 1 gpu
+	echo "ATI -> HD 2000 - HD 5000"
+	echo "If you cannot find the driver for your are gpu just press enter"
 	gpu=$(echo "$gpu" | tr A-Z a-z)
 	if [ "$gpu" = "a" ]; then
 		pacman -S xf86-video-intel

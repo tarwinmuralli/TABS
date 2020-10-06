@@ -11,7 +11,6 @@ mlocate
 wget
 ffmpeg
 imagemagick
-gvfs
 unclutter
 xclip
 xorg-xev
@@ -54,7 +53,6 @@ firefox
 mpv
 adwaita-icon-theme
 pavucontrol
-pcmanfm
 flameshot
 neofetch
 neovim
@@ -62,3 +60,6 @@ htop
 cmus
 polkit
 vifm
+udisks2
+udiskie
+ntfs-3g
