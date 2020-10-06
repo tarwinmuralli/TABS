@@ -117,7 +117,7 @@ install_yay () {
 
 install_aur_pkg () {
 	cp -v aur_pkg.txt /home/"$user_name"
-	sudo -u "$user_name" yay -S - < /home/"$user_name"/aur_pkg.txt
+	sudo -u "$user_name" yay --noconfirm -S - < /home/"$user_name"/aur_pkg.txt
 }
 
 setup_dotfiles () {
