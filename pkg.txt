@@ -53,8 +53,8 @@ firefox
 mpv
 adwaita-icon-theme
 pavucontrol
-flameshot
 neofetch
+gnome-screenshot
 neovim
 htop
 cmus
