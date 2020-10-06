@@ -39,13 +39,14 @@ main () {
 	systemctl_enable >> log 2>&1
 	echo "Creating user directories..."
 	user_directory >> log 2>&1
-	## TODO : vim plug
 	echo "Installing yay..."
 	install_yay >> log 2>&1
 	echo "Installing aur packages..."
 	install_aur_pkg >> log 2>&1
 	echo "Setting up dot files..."
 	setup_dotfiles "$@" >> log 2>&1
+	echo "Setting up vim..."
+	setup_vim >> log 2>&1
 	echo "Check the log file for more information"
 }
 
@@ -115,7 +116,6 @@ install_yay () {
 }
 
 install_aur_pkg () {
-	## TODO Keeps Failing
 	cp -v aur_pkg.txt /home/"$user_name"
 	su - "$user_name" -c '
 	yay  --noconfirm -S - < aur_pkg.txt
@@ -133,6 +133,13 @@ setup_dotfiles () {
 	# chmod everything in .local/bin
 	cd "$HOME"/.local/bin
 	chmod +x *'
+}
+
+setup_vim () {
+	su - "$user_name" -c '
+	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	nvim -c ":PlugInstall" -c "q" -c "q"'
 }
 
 system_optimization () {
