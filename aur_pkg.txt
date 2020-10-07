@@ -3,3 +3,4 @@ slock-gruvbox-lowcontrast
 st-luke-git
 nordic-theme-git
 task-spooler
+ttf-material-design-icons-git

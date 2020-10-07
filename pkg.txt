@@ -63,3 +63,4 @@ vifm
 udisks2
 udiskie
 ntfs-3g
+playerctl
