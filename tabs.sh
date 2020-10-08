@@ -59,8 +59,7 @@ create_user () {
 }
 
 create_passwd () {
-	read -rp "Enter password for ${user_name}: " user_password
-	echo "${user_name}:${user_password}" | chpasswd
+	passwd "$user_name"
 	sed -i 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
 }
 
@@ -106,7 +105,7 @@ gpu_driver () {
 user_directory () {
 	su "$user_name" -c '
 	cd "$HOME"
-	mkdir -v dox dl pix vids music
+	mkdir -v dox dl pix vids music .cache
 	mkdir -v -p "$HOME"/.local/src'
 }
 
@@ -118,9 +117,7 @@ install_yay () {
 	makepkg --noconfirm -si'
 }
 
-install_aur_pkg () {
-	sudo -u "$user_name" yay --noconfirm -S - < aur_pkg.txt
-}
+install_aur_pkg () { sudo -u "$user_name" yay --noconfirm -S - < aur_pkg.txt; }
 
 setup_dotfiles () {
 	dotfiles="${1:-"https://github.com/tarwinmuralli/dotfiles.git"}"
@@ -137,8 +134,9 @@ setup_dotfiles () {
 
 setup_vim () {
 	su "$user_name" -c '
-	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim \
+		--create-dirs \
+		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	nvim -c ":PlugInstall" -c "q" -c "q"'
 }
 
