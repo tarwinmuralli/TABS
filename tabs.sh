@@ -18,8 +18,9 @@ main () {
 	timedatectl set-ntp true # sets date and time correctly
 	# Call all function
 
+	touch log
 	echo "Updating mirrors..."
-	arch_mirror > log 2>&1
+	arch_mirror >> log 2>&1
 	echo 'Updating...'
 	pacman --noconfirm --needed -Syu >> log 2>&1
 	echo "Creating User..."
@@ -103,14 +104,14 @@ gpu_driver () {
 }
 
 user_directory () {
-	su - "$user_name" -c '
+	su "$user_name" -c '
 	cd "$HOME"
 	mkdir -v dox dl pix vids music
 	mkdir -v -p "$HOME"/.local/src'
 }
 
 install_yay () {
-	su - "$user_name" -c '
+	su "$user_name" -c '
 	cd "$HOME"/.local/src
 	git clone https://aur.archlinux.org/yay.git
 	cd yay
@@ -118,14 +119,13 @@ install_yay () {
 }
 
 install_aur_pkg () {
-	cp -v aur_pkg.txt /home/"$user_name"
-	sudo -u "$user_name" yay --noconfirm -S - < /home/"$user_name"/aur_pkg.txt
+	sudo -u "$user_name" yay --noconfirm -S - < aur_pkg.txt
 }
 
 setup_dotfiles () {
 	dotfiles="${1:-"https://github.com/tarwinmuralli/dotfiles.git"}"
 	sudo -u "$user_name" git clone "$dotfiles" /home/"$user_name"/.local/src/dotfiles
-	su - "$user_name" -c '
+	su "$user_name" -c '
 	cd "$HOME"
 	rm -rf .bash_history .bash_logout .bash_profile .bashrc
 	cd "$HOME"/.local/src/dotfiles
@@ -136,7 +136,7 @@ setup_dotfiles () {
 }
 
 setup_vim () {
-	su - "$user_name" -c '
+	su "$user_name" -c '
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 	nvim -c ":PlugInstall" -c "q" -c "q"'
